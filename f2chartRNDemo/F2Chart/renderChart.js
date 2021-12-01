@@ -25,7 +25,7 @@ export default function renderChart(props) {
   const chartData = data.map(c => {
     return {
       ...c,
-      date: c.date, // 将时间处理成 2020-03-12 12:00:00 格式
+      date: c.date, // 可在此处做时间格式处理
     };
   })
 
@@ -33,6 +33,7 @@ export default function renderChart(props) {
   const lastData = chartData[chartData.length - 1];
   const max = getMaxValue(chartData)
 
+  //简单做了折线图和饼图区分 其他类型需自行修改
   if (option.type !== 'pie') {
     const script = `
   (function(){
@@ -100,7 +101,6 @@ export default function renderChart(props) {
     chart.interaction('pinch', {
       background:'#000',
       mode: 'x', // 图表平移的方向，默认为 'x'
-    //   sensitivity: {Number}, // 用于控制分类类型数据的缩放灵敏度
       minScale: 0.1, // 缩小的最小倍数
       maxScale: 4, // 放大的最大倍数
       pressThreshold: 9, // hammer.js 设置，用于设置触发 press 事件的设置
@@ -136,21 +136,14 @@ export default function renderChart(props) {
     .shape('smooth')
     .color('type',${JSON.stringify(option.colors)})
 
-
-    // chart.area({
-    //   sortable: false
-    // }).position('date*value').shape('smooth')
-    
     chart.render();
  
-    const item = ${JSON.stringify(lastData)}
-    const point = chart.getPosition(item);
-    // chart.showTooltip(point);
   })();
   `;
     return script
   } else {
     let total = sum(data.map(item => { return item.value }))
+    //是否显示每块区域的名称及比例
     const pieLabel = option?.pieLabel ? ` 
     chart.pieLabel({
       label1(data, color) {
@@ -196,9 +189,6 @@ export default function renderChart(props) {
           stroke: '#fff'
         });
       chart.render();
-
-
- 
     })();
     `
     return pieScript;
