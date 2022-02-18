@@ -98,6 +98,7 @@ export default class CateDemo extends Component {
   //         cateData={[data.cateData[selectedRootCate]]}
   //         renderCell={(item, sectionIndex, index) => this.renderCell(item, sectionIndex, index)}
   //         renderSectionHeader={(item) => this.sectionComp(item)}
+  //         selRootCate={selectedRootCate} //自定义选定的根菜单
   //         selRootCateChange={(index, item) => { this.setState({ selectedRootCate: index }) }}
   //       />
   //     </View >

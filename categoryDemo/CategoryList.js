@@ -39,11 +39,12 @@ export default class CategoryList extends Component {
   }
 
   componentDidMount() {
-    const { cateData, bgColor, mainColor, rootCateData } = this.props
+    const { cateData, bgColor, mainColor, rootCateData, selRootCate } = this.props
     this.setState({
+      selectedRootCate: selRootCate || 0,
       rootCateData: rootCateData || [],
       cateData: cateData || [],
-      rootSelItem: cateData[0] || {},
+      rootSelItem: rootCateData[selRootCate || 0] || {},
       bgColor: bgColor || '#f5f5f5',
       mainColor: mainColor || '#fff'
     })
@@ -53,11 +54,12 @@ export default class CategoryList extends Component {
     if (
       (JSON.stringify(nextProps.cateData) !== JSON.stringify(this.state.cateData))
       || (JSON.stringify(nextProps.rootCateData) !== JSON.stringify(this.state.rootCateData))
-    ) {
+      || nextProps.selRootCate !== this.props.selRootCate) {
       this.setState({
+        selectedRootCate: nextProps.selRootCate || 0,
         rootCateData: nextProps.rootCateData || [],
         cateData: nextProps.cateData || [],
-        rootSelItem: nextProps.cateData[0] || {},
+        rootSelItem: nextProps.rootCateData[nextProps.selRootCate || 0] || {},
       })
     }
 
@@ -72,7 +74,7 @@ export default class CategoryList extends Component {
 
 
 
-  renderRootItem = (item, index) => {
+  renderRootItem = (item, index) => {//左边菜单节点
     const { rootCateData, selectedRootCate, mainColor, bgColor } = this.state
     const { needScrollTo } = this.props
     return (
@@ -164,7 +166,7 @@ export default class CategoryList extends Component {
     )
   }
 
-  renderItem(item) {
+  renderItem(item) {//右边菜单二级分类
     const { cateData, } = this.state
     const { renderCell, needScrollTo } = this.props
     let sectionIndex = item.section.rootIndex
@@ -198,14 +200,13 @@ export default class CategoryList extends Component {
 
   renderItemCate() {//右边菜单
     const { cateData, selectedRootCate, rootSelItem } = this.state
-    const { renderSectionHeader, renderItem, needScrollTo, onCateEndReached, onCateRefresh } = this.props
-    // console.log('cateData', cateData)
+    const { renderSectionHeader, needScrollTo, onCateEndReached, onCateRefresh } = this.props
     return (
       <View style={{ flex: 1 }}>
         <SectionList
           ref={(ref) => this.sectionList = ref}
           renderSectionHeader={(item) => renderSectionHeader ? renderSectionHeader(item) : this.sectionComp(item)}
-          renderItem={(data) => renderItem ? renderItem(data) : this.renderItem(data)}
+          renderItem={(data) => this.renderItem(data)}
           sections={cateData}
           // ListEmptyComponent={<DefaultPage style={{ height: 200 }} />} 
           ItemSeparatorComponent={() => <View />}
@@ -221,7 +222,7 @@ export default class CategoryList extends Component {
     )
   }
 
-  scrollRootSel = (e) => {
+  scrollRootSel = (e) => {//右边菜单滚动时左边菜单跳到相应选项
     const { cateData, isScroll, rootCateData } = this.state
     let currentIndex = e?.viewableItems[0]?.section?.rootIndex
     if (isScroll) {
